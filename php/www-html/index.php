@@ -1,5 +1,5 @@
 <?php
-$connect = new PDO("pgsql:host=localhost;port=5432;dbname=postgres;user=postgres;password=superpassword");
+$connect = new PDO("pgsql:host=database;port=5432;dbname=postgres;user=postgres;password=superpassword");
 $query = "
     select name, code, socr from kladr where code like '__00000000000'
     order by name asc";

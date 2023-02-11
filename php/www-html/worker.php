@@ -1,6 +1,6 @@
 <?php
-$connect = new PDO("pgsql:host=localhost;port=5432;dbname=postgres;user=postgres;password=superpassword;");
-$mariadb = new PDO('mysql:host=127.0.0.1;dbname=kladr', 'root', 'rootpassword');
+$connect = new PDO("pgsql:host=database;port=5432;dbname=postgres;user=postgres;password=superpassword;");
+$mariadb = new PDO('mysql:host=mariadb;dbname=kladr', 'root', 'rootpassword');
 $action = $_POST['action'];
 header('Content-Type: text/html; charset=utf-8');
 
