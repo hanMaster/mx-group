@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS street (
                                      uno        VARCHAR(4),
                                      ocatd      VARCHAR(11)
 );
+CREATE INDEX ON street ((lower(name)));
+CREATE INDEX ON street (code);
 
 CREATE TABLE IF NOT EXISTS kladr (
                                      id         SERIAL PRIMARY KEY,
@@ -21,6 +23,9 @@ CREATE TABLE IF NOT EXISTS kladr (
                                      status     VARCHAR(1)
 );
 
+CREATE INDEX ON kladr ((lower(name)));
+CREATE INDEX ON kladr (code);
+
 CREATE TABLE IF NOT EXISTS doma (
                                      id         SERIAL PRIMARY KEY,
                                      name       VARCHAR(40),
@@ -32,3 +37,6 @@ CREATE TABLE IF NOT EXISTS doma (
                                      uno        VARCHAR(4),
                                      ocatd      VARCHAR(11)
 );
+
+CREATE INDEX ON doma ((lower(name)));
+CREATE INDEX ON doma (code);
