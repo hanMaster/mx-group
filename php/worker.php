@@ -1,5 +1,6 @@
 <?php
 $connect = new PDO("pgsql:host=localhost;port=5432;dbname=postgres;user=postgres;password=superpassword;");
+$mariadb = new PDO('mysql:host=127.0.0.1;dbname=kladr', 'root', 'rootpassword');
 $action = $_POST['action'];
 header('Content-Type: text/html; charset=utf-8');
 
@@ -34,9 +35,14 @@ if ($action === "search") {
     $rowsStr = $_POST['rows'];
 
     $rows = json_decode($rowsStr);
-    // todo save to MariaDB
 
-    print json_encode($rows);
+    foreach ($rows as $row)
+    {
+        $stmt = $mariadb->prepare("INSERT INTO rowaddress (address) VALUES(?)");
+        $stmt->execute([$row]);
+    }
+
+    print json_encode(["status" => "success"]);
 } else if ($action === "saveFields") {
     $rowsStr = $_POST['rows'];
 

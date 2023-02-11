@@ -98,7 +98,9 @@ $result = $connect->query($query);
         </tbody>
     </table>
 
-    <h5 >Найдено записаей: <span id="resultCount">0</span></h5>
+    <h5 >Найдено записей: <span id="resultCount">0</span></h5>
+    <br>
+    <h6 id="save"></h6>
 </div>
 
 <script src="js/index.js"></script>
