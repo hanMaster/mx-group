@@ -11,7 +11,7 @@ if ($action === "search") {
     $house = $_POST['house'];
 
     $streets = getStreetCodes($cityCode, $street, $connect);
-    $streetResult = $streets[0]['name']." ".$streets[0]['socr'];
+    $streetResult = $streets[0]['name'] . " " . $streets[0]['socr'];
 
     $city = getCityByCode($cityCode, $connect);
     $region = getRegionByCode($regionCode, $connect);
@@ -36,20 +36,30 @@ if ($action === "search") {
 
     $rows = json_decode($rowsStr);
 
-    foreach ($rows as $row)
-    {
-        $stmt = $mariadb->prepare("INSERT INTO rowaddress (address) VALUES(?)");
-        $stmt->execute([$row]);
-    }
+    try {
+        foreach ($rows as $row) {
+            $stmt = $mariadb->prepare("INSERT INTO rowaddress (address) VALUES(?)");
+            $stmt->execute([$row]);
+        }
 
-    print json_encode(["status" => "success"]);
+        print json_encode(["status" => "success"]);
+    } catch (Exception $e) {
+        print json_encode(["status" => "failed"]);
+    }
 } else if ($action === "saveFields") {
     $rowsStr = $_POST['rows'];
 
     $rows = json_decode($rowsStr);
-    // todo save to MariaDB
 
-    print json_encode($rows);
+    try {
+        foreach ($rows as $row) {
+            $stmt = $mariadb->prepare("INSERT INTO kladr (region, city, street, house) VALUES(?, ?, ?, ?)");
+            $stmt->execute([$row->{'region'}, $row->{'city'}, $row->{'street'}, $row->{'house'}]);
+        }
+        print json_encode(["status" => "success"]);
+    } catch (Exception $e) {
+        print json_encode(["status" => "failed"]);
+    }
 }
 
 function getCityByCode($c, $conn): string
@@ -107,17 +117,15 @@ function getStreetCodes($cityCode, $streetName, $conn): array
 
 function findHouseOnStreet($streetArray, $house, $conn): bool
 {
-    foreach ($streetArray as $street)
-    {
+    foreach ($streetArray as $street) {
         $streetCode = $street['code'];
         $code = substr($streetCode, 0, 15) . "%";
         $query = "select name from doma where code like :code";
         $prepared = $conn->prepare($query);
         $prepared->execute(['code' => $code]);
         $houseArray = $prepared->fetchAll();
-        foreach ($houseArray as $houseStr)
-        {
-            if (str_contains($houseStr['name'], $house)){
+        foreach ($houseArray as $houseStr) {
+            if (str_contains($houseStr['name'], $house)) {
                 return true;
             }
         }
