@@ -28,7 +28,7 @@ async function handleSearch() {
     searchResult = [...response];
 }
 
-function saveRow() {
+async function saveRow() {
     if (searchResult.length === 0) {
         return;
     }
@@ -40,7 +40,11 @@ function saveRow() {
     formData.append('action', 'saveRow');
     formData.append('rows', JSON.stringify(rows));
 
-    return requestServer(formData);
+    const res = await requestServer(formData);
+    if (res.status === 'success') {
+        const status = document.querySelector('#save');
+        status.innerHTML = 'Успешно сохранили в строку';
+    }
 }
 
 function saveFields() {
