@@ -2,6 +2,8 @@ version: "3.9"
 services:
   database:
     image: postgres:latest
+    container_name: postgres
+    restart: unless-stopped
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./database/initPostgres.sql:/docker-entrypoint-initdb.d/init.sql
@@ -15,8 +17,12 @@ services:
       timeout: 5s
       retries: 5
       start_period: 5s
+    networks:
+      - app
   mariadb:
     image: 'mariadb:10'
+    container_name: mariadb
+    restart: unless-stopped
     ports:
       - '3306:3306'
     environment:
@@ -33,9 +39,44 @@ services:
       test: [ "CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}" ]
       retries: 3
       timeout: 5s
+    networks:
+      - app
+
+  php-fpm:
+    build: ./php-fpm
+    container_name: php-fpm
+    depends_on:
+      - database
+      - mariadb
+    restart: unless-stopped
+    volumes:
+      - ./www-html:/var/www/html
+    networks:
+      - app
+
+  nginx:
+    image: nginx:1.23-alpine
+    container_name: nginx
+    depends_on:
+      - php-fpm
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    volumes:
+      - ./www-html:/var/www/html
+      - ./nginx:/etc/nginx/conf.d
+    networks:
+      - app
+
 
 volumes:
   db-data:
     driver: local
   mariadb-data:
     driver: local
+  www-html:
+    driver: local
+
+networks:
+  app:
+    driver: bridge
