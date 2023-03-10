@@ -7,6 +7,8 @@ async function handleSelectRegion() {
     formData.append('code', val);
     const response = await requestServer(formData);
     setCities(response);
+    document.querySelector('#street').value = '';
+    document.querySelector('#house').value = '';
 }
 
 async function handleSearch() {
@@ -41,13 +43,10 @@ async function saveRow() {
     formData.append('rows', JSON.stringify(rows));
 
     const res = await requestServer(formData);
-    if (res.status === 'success') {
-        const status = document.querySelector('#save');
-        status.innerHTML = 'Успешно сохранили в строку';
-    }
+    updateStatus(res.status);
 }
 
-function saveFields() {
+async function saveFields() {
     if (searchResult.length === 0) {
         return;
     }
@@ -56,7 +55,8 @@ function saveFields() {
     formData.append('action', 'saveFields');
     formData.append('rows', JSON.stringify(searchResult));
 
-    return requestServer(formData);
+    const res = await  requestServer(formData);
+    updateStatus(res.status);
 }
 
 function renderTable(data) {
@@ -93,4 +93,12 @@ function setCities(data) {
     })
 }
 
+function updateStatus(status) {
+    const el = document.querySelector('#save');
+    if (status === 'success') {
+        el.innerHTML = 'Успешно сохранили';
+    } else {
+        el.innerHTML = 'Что-то пошло не так, сохранение не удалось';
+    }
+}
 
